@@ -1,0 +1,33 @@
+{
+  "name": "package.json",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/Pau-Hndez/web_project_around_express#readme",
+  "bugs": {
+    "url": "https://github.com/Pau-Hndez/web_project_around_express/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pau-Hndez/web_project_around_express.git"
+  },
+  "license": "ISC",
+  "author": "Paula Hernandez",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "lint": "npx eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "nodemon": "^3.1.14"
+  },
+  "dependencies": {
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.32.0",
+    "express": "^5.2.1",
+    "mongoose": "^9.7.2"
+  }
+}
