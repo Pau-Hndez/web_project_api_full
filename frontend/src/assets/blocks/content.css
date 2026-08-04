@@ -1,0 +1,18 @@
+.content {
+  margin: 0 200px;
+}
+
+.content__places {
+  width: 100%;
+}
+
+@media screen and (max-width: 768px) {
+  .content {
+    margin: 0 19px;
+  }
+}
+@media screen and (max-width: 320px) {
+  .content {
+    margin: 0 19px;
+  }
+}

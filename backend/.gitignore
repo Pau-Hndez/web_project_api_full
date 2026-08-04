@@ -13,3 +13,5 @@ node_modules
 .DS_Store
 .idea
 .vscode
+#Carpeta con el registro de solicitudes y errores
+logs/

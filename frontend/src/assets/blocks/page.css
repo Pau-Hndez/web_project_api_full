@@ -1,0 +1,22 @@
+.page {
+  background-color: #000000;
+  font-family: "Inter";
+  color: #ffffff;
+  margin: auto;
+  max-width: 1280px;
+}
+@media screen and (max-width: 768px) {
+  .page {
+    max-width: 768px;
+    margin: 0;
+    overflow: hidden;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .page {
+    max-width: 320px;
+    margin: 0;
+    overflow: hidden;
+  }
+}

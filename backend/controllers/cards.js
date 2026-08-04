@@ -16,26 +16,24 @@ module.exports.createCard = (req, res) => {
     .catch(() => res.status(400).send({ message: "Datos inválidos" }));
 };
 
-module.exports.deleteCardById = (req, res) => {
-  Card.findByIdAndDelete(req.params.cardId)
+module.exports.deleteCardById = (req, res, next) => {
+  Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: "No se encontró la tarjeta" });
-      }
-
-      return res.send(card);
-    })
-    .catch((err) => {
-      if (err.name === "CastError") {
-        return res.status(400).send({
-          message: "ID de tarjeta inválido",
+        return res.status(404).send({
+          message: "Tarjeta no encontrada",
         });
       }
 
-      return res.status(500).send({
-        message: "Error interno del servidor",
-      });
-    });
+      if (!card.owner.equals(req.user._id)) {
+        return res.status(403).send({
+          message: "No tienes permiso para eliminar esta tarjeta",
+        });
+      }
+
+      return card.deleteOne().then(() => res.send(card));
+    })
+    .catch(next);
 };
 
 module.exports.likeCard = (req, res) => {

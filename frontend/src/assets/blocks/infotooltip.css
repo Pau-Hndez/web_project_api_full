@@ -1,0 +1,66 @@
+.infoTooltip {
+  position: fixed;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+.infoTooltip_opened {
+  display: flex;
+}
+.infoTooltip__container {
+  position: relative;
+  width: 430px;
+  min-height: 330px;
+  background: #fff;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 36px;
+  box-sizing: border-box;
+}
+.infoTooltip__title {
+  font-weight: 900;
+  font-size: 24px;
+  color: #000;
+  text-align: center;
+}
+
+.infoTooltip__close {
+  background-image: url(../images/Close\ Icon.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  width: 40px;
+  height: 40px;
+  border-style: none;
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.infoTooltip__close:hover {
+  background-image: url(../images/Close\ Icon\ -\ hover.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  width: 40px;
+  height: 40px;
+  border-style: none;
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.infoTooltip__icon {
+  width: 120px;
+  height: 120px;
+}

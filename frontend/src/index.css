@@ -1,0 +1,15 @@
+@import url(../vendor/normalize.css);
+@import url(../vendor/fonts.css);
+@import url(./assets/blocks/page.css);
+@import url(../src/assets/blocks/header.css);
+@import url(../src/assets/blocks/content.css);
+@import url(../src/assets/blocks/footer.css);
+
+@import url(../src/assets/blocks/popup.css);
+@import url(../src/assets/blocks/card.css);
+
+@import url(../src/assets/blocks/cards.css);
+@import url(../src/assets/blocks/profile.css);
+@import url(../src/assets/blocks/login.css);
+@import url(../src/assets/blocks/register.css);
+@import url(../src/assets/blocks/infotooltip.css);
