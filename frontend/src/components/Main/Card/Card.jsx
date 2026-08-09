@@ -1,5 +1,10 @@
+import { useContext } from "react";
+import CurrentUserContext from "../../../contexts/CurrentUserContext";
+
 export default function Card(props) {
-  const { name, link, isLiked } = props.card;
+  const { currentUser } = useContext(CurrentUserContext);
+  const { name, link, likes } = props.card;
+  const isLiked = likes.includes(currentUser._id);
   const { card, handleClickCard, onCardLike, onCardDelete } = props;
   const imageComponent = { name, link, isLiked };
   const cardLikeButtonClassName = `card__like-button ${

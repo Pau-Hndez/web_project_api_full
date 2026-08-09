@@ -8,12 +8,15 @@ module.exports.getCards = (req, res) => {
       res.status(500).send({ message: "Ha ocurrido un error en el servidor" }),
     );
 };
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
-
-  Card.create({ name, link, owner: req.user._id })
+  Card.create({
+    name,
+    link,
+    owner: req.user._id,
+  })
     .then((card) => res.send({ data: card }))
-    .catch(() => res.status(400).send({ message: "Datos inválidos" }));
+    .catch(next);
 };
 
 module.exports.deleteCardById = (req, res, next) => {

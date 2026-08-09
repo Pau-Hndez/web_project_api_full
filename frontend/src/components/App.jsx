@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import { setToken, getToken } from "../utils/token";
+import { setToken, getToken, removeToken } from "../utils/token";
 
 import Login from "./Main/Login/Login";
 import Register from "./Main/Register/Register";
@@ -14,6 +14,7 @@ import api from "../utils/Api";
 import CurrentUserContext from "../contexts/CurrentUserContext";
 
 function App() {
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
   const [email, setEmail] = useState("");
   const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
@@ -43,7 +44,7 @@ function App() {
         return auth.checkToken(res.token);
       })
       .then((data) => {
-        setEmail(data.data.email);
+        setEmail(data.email);
         setLoggedIn(true);
         navigate("/");
       });
@@ -56,15 +57,28 @@ function App() {
   }
 
   useEffect(() => {
-    const token = localStorage.getItem("jwt");
-    if (!token) return;
+    const token = getToken();
+
+    if (!token) {
+      setIsCheckingAuth(false);
+      return;
+    }
+
     auth
       .checkToken(token)
       .then((res) => {
         setLoggedIn(true);
-        setEmail(res.data.email);
+        setEmail(res.email);
+        setCurrentUser(res);
       })
-      .catch(console.error);
+      .catch((error) => {
+        console.error("Error al comprobar el token:", error);
+        removeToken();
+        setLoggedIn(false);
+      })
+      .finally(() => {
+        setIsCheckingAuth(false);
+      });
   }, []);
 
   function handleOpenInfoTooltip(success) {
@@ -115,39 +129,51 @@ function App() {
   useEffect(() => {
     if (!loggedIn) return;
 
-    api.getInitialCards().then(setCards).catch(console.error);
+    api
+      .getInitialCards()
+      .then((card) => {
+        setCards(card.data);
+      })
+      .catch(console.error);
     api.getUserInfo().then(setCurrentUser).catch(console.error);
   }, [loggedIn]);
 
   async function handleCardLike(card) {
     try {
-      const newCard = await api.changeLikeCardStatus(card._id, !card.isLiked);
+      const isLiked = card.likes.some((userId) => userId === currentUser._id);
+
+      const response = await api.changeLikeCardStatus(card._id, !isLiked);
 
       setCards((cards) =>
-        cards.map((item) => (item._id === card._id ? newCard : item)),
+        cards.map((item) => (item._id === card._id ? response.data : item)),
       );
     } catch (error) {
       console.error(error);
     }
   }
   async function handleCardDelete(card) {
-    await api
-      .deleteCard(card._id)
-      .then(() => {
-        setCards((state) =>
-          state.filter((currentCard) => currentCard._id !== card._id),
-        );
-      })
-      .catch((error) => console.error(error));
+    try {
+      await api.deleteCard(card._id);
+
+      setCards((cards) => cards.filter((item) => item._id !== card._id));
+    } catch (error) {
+      console.error("No se pudo eliminar la tarjeta:", error);
+    }
   }
   const handleAddPlaceSubmit = ({ name, link }) => {
-    (async () => {
-      await api.addCard(name, link).then((newCard) => {
-        setCards((prevCards) => [newCard, ...prevCards]);
+    api
+      .addCard(name, link)
+      .then((newCard) => {
+        setCards((prevCards) => [newCard.data, ...prevCards]);
         handleClosePopup();
+      })
+      .catch((err) => {
+        console.error("Error al agregar la tarjeta:", err);
       });
-    })();
   };
+  if (isCheckingAuth) {
+    return null;
+  }
   return (
     <CurrentUserContext.Provider
       value={{

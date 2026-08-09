@@ -37,7 +37,7 @@ export default function Header({ loggedIn, email, handleSignOut }) {
               Iniciar Sesión
             </Link>
           )}
-          {/* Opcional: Mostrar ambos si está en la página de inicio u otra ruta */}
+
           {location.pathname !== "/signin" &&
             location.pathname !== "/signup" && (
               <div className="auth-buttons">

@@ -36,46 +36,58 @@ module.exports.getCurrentUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
     .catch(next);
 };
 
-module.exports.getUserById = (req, res) => {
+module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => res.send({ data: user }))
     .catch(next);
 };
 
-module.exports.createUser = (req, res, next) => {
+module.exports.createUser = async (req, res, next) => {
   const { name, about, avatar, email, password } = req.body;
 
-  bcrypt
-    .hash(password, 10)
-    .then((hash) => {
-      return User.create({
-        name,
-        about,
-        avatar,
-        email,
-        password: hash,
-      });
-    })
-    .then((user) => {
-      res.status(201).send(user);
-    })
-    .catch(next);
+  try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      const error = new Error("El email ya está en uso");
+      error.statusCode = 409;
+      throw error;
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hashedPassword,
+    });
+    const { password: _, ...userWithoutPassword } = user.toObject();
+    res.status(201).send(userWithoutPassword);
+  } catch (err) {
+    if (err.name === "ValidationError") {
+      err.statusCode = 400;
+    } else if (err.code === 11000) {
+      err.statusCode = 409;
+      err.message = "El email ya está en uso";
+    }
+    next(err);
+  }
 };
 
-module.exports.updateProfile = (req, res) => {
+module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
     {
-      returnDocument: "after", //new:true is now depricated according to the newest Mongoose documentation
+      returnDocument: "after",
       runValidators: true,
     },
   )
@@ -83,7 +95,7 @@ module.exports.updateProfile = (req, res) => {
     .catch(next);
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(
     req.user._id,

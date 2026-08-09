@@ -17,20 +17,16 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
+    default:
+      "https://practicum-content.s3.us-west-1.amazonaws.com/resources/moved_avatar_1604080799.jpg",
     validate: {
-      validator: (url) =>
-        /^https?:\/\/(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+([a-zA-Z0-9._~:/?#[\]@!$&'()*+,;=-]*)?$/.test(
-          url,
-        ),
+      validator: (url) => validator.isURL(url),
       message: "URL inválida",
-      default:
-        "https://practicum-content.s3.us-west-1.amazonaws.com/resources/moved_avatar_1604080799.jpg",
     },
   },
   email: {
     required: true,
     type: String,
-    unique: true,
     validate: {
       validator(value) {
         return validator.isEmail(value);
@@ -44,6 +40,14 @@ const userSchema = new mongoose.Schema({
     select: false,
   },
 });
+
+userSchema.index(
+  { email: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { email: { $type: "string" } },
+  },
+);
 userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email })
     .select("+password")

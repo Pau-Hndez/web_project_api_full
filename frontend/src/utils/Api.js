@@ -77,16 +77,12 @@ class Api {
         name,
         link,
       }),
-    })
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
-        return Promise.reject(`Error: ${res.status}`);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    }).then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Error: ${res.status}`);
+    });
   }
 
   async deleteCard(cardId) {
@@ -96,48 +92,27 @@ class Api {
         ...this._headers,
         Authorization: `Bearer ${getToken()}`,
       },
-    })
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
-        return Promise.reject(`Error: ${res.status}`);
-      })
-      .catch((err) => console.log(err));
+    }).then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+
+      return Promise.reject(new Error(`Error: ${res.status}`));
+    });
   }
 
-  async addLike(cardId) {
-    return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
-      method: "PUT",
-      headers: {
-        ...this._headers,
-        Authorization: `Bearer ${getToken()}`,
-      },
-    }).then((res) => {
-      if (res.ok) return res.json();
-      return Promise.reject(`Error: ${res.status}`);
-    });
-  }
-  async removeLike(cardId) {
-    return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
-      method: "DELETE",
-      headers: {
-        ...this._headers,
-        Authorization: `Bearer ${getToken()}`,
-      },
-    }).then((res) => {
-      if (res.ok) return res.json();
-      return Promise.reject(`Error: ${res.status}`);
-    });
-  }
   async _makeRequest(endPoint, method) {
     const options = {
       method,
-      headers: this._headers,
-      Authorization: `Bearer ${getToken()}`,
+      headers: {
+        ...this._headers,
+        Authorization: `Bearer ${getToken()}`,
+      },
     };
     const response = await fetch(`${this._baseUrl}${endPoint}`, options);
-    if (!response.ok) throw new Error(response.status);
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
     return response.json();
   }
   async changeLikeCardStatus(cardId, isLiked) {
@@ -145,7 +120,6 @@ class Api {
       ? this._makeRequest(`/cards/${cardId}/likes`, "PUT")
       : this._makeRequest(`/cards/${cardId}/likes`, "DELETE");
   }
-
   async editProfilePicture({ avatar }) {
     console.log(avatar);
     return fetch(`${this._baseUrl}/users/me/avatar`, {

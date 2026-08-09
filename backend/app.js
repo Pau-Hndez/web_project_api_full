@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const User = require("./models/user");
 const app = express();
 const PORT = 3000;
 const usersRouter = require("./routes/users");
@@ -17,7 +18,7 @@ const { requestLogger, errorLogger } = require("./middlewares/logger");
 app.use(requestLogger);
 app.use(cors());
 app.use(express.json());
-
+mongoose.set("autoIndex", true);
 mongoose
   .connect("mongodb://localhost:27017/aroundb")
   .then(() => {
