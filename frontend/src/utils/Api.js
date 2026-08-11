@@ -143,7 +143,7 @@ class Api {
 }
 
 const api = new Api({
-  baseUrl: "http://localhost:3000",
+  baseUrl: import.meta.env.VITE_PUBLIC_URL,
   headers: {
     "Content-Type": "application/json",
   },
