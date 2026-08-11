@@ -1,7 +1,8 @@
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
+require("dotenv").config();
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = "super-secret-key"; // clave temporal
+const JWT_SECRET = process.env.JWT_SECRET;
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
@@ -20,18 +21,29 @@ module.exports.login = (req, res, next) => {
 
       res.send({ token });
     })
-    .catch(next);
+    .catch((err) => {
+      if (
+        err.message === "Correo incorrectos" ||
+        err.message === "Contraseña incorrectos"
+      ) {
+        return res.status(401).send({
+          message: "Correo o contraseña incorrectos",
+        });
+      }
+
+      next(err);
+    });
 };
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        return res.status(404).send({
-          message: "Usuario no encontrado",
-        });
+        const error = new Error("Usuario no encontrado");
+        error.statusCode = 404;
+        throw error;
       }
 
-      return res.send(user);
+      res.send(user);
     })
     .catch(next);
 };
@@ -44,7 +56,15 @@ module.exports.getUsers = (req, res, next) => {
 
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (!user) {
+        const error = new Error("Usuario no encontrado");
+        error.statusCode = 404;
+        throw error;
+      }
+
+      res.send({ data: user });
+    })
     .catch(next);
 };
 

@@ -1,6 +1,6 @@
 const express = require("express");
+const cors = require("cors");
 const mongoose = require("mongoose");
-const User = require("./models/user");
 const app = express();
 const PORT = 3000;
 const usersRouter = require("./routes/users");
@@ -12,12 +12,15 @@ const {
   validateLogin,
 } = require("./middlewares/validation");
 const auth = require("./middlewares/auth");
-const cors = require("cors");
 const { errors } = require("celebrate");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 app.use(requestLogger);
+
 app.use(cors());
+app.options(/(.*)/, cors());
+
 app.use(express.json());
+
 mongoose.set("autoIndex", true);
 mongoose
   .connect("mongodb://localhost:27017/aroundb")
@@ -28,9 +31,17 @@ mongoose
     console.error("Error al conectar a MongoDB:", err);
   });
 
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("El servidor va a caer");
+  }, 0);
+});
+
 app.post("/signin", validateLogin, login);
 app.post("/signup", validateCreateUser, createUser);
+
 app.use(auth);
+
 app.use("/users", usersRouter);
 app.use("/cards", cardsRouter);
 

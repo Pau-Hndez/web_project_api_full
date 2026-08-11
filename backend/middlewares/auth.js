@@ -1,5 +1,8 @@
+require("dotenv").config();
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = "super-secret-key"; // clave temporal
+
+const JWT_SECRET = process.env.JWT_SECRET;
+
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
 
@@ -16,7 +19,9 @@ const auth = (req, res, next) => {
   try {
     payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
-    next("Token invalido");
+    return res.status(401).send({
+      message: "Autorización requerida",
+    });
   }
 
   req.user = payload;

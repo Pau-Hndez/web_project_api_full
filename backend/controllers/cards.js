@@ -1,12 +1,10 @@
 const Card = require("../models/card");
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .orFail()
     .then((cards) => res.send({ data: cards }))
-    .catch(() =>
-      res.status(500).send({ message: "Ha ocurrido un error en el servidor" }),
-    );
+    .catch(next);
 };
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
@@ -39,56 +37,37 @@ module.exports.deleteCardById = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
-    { new: true },
+    { returnDocument: "after" },
   )
     .then((card) => {
       if (!card) {
-        return res.status(404).send({
-          message: "No existe la tarjeta",
-        });
+        const error = new Error("No existe la tarjeta");
+        error.statusCode = 404;
+        throw error;
       }
 
       return res.send({ data: card });
     })
-    .catch((err) => {
-      if (err.name === "CastError") {
-        return res.status(400).send({
-          message: "ID de tarjeta inválido",
-        });
-      }
-
-      return res.status(500).send({
-        message: "Error interno del servidor",
-      });
-    });
+    .catch(next);
 };
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
-    { new: true },
+    { returnDocument: "after" },
   )
     .then((card) => {
       if (!card) {
-        return res.status(404).send({
-          message: "No existe la tarjeta",
-        });
-      }
-      return res.send({ data: card });
-    })
-    .catch((err) => {
-      if (err.name === "CastError") {
-        return res.status(400).send({
-          message: "ID de tarjeta inválido",
-        });
+        const error = new Error("No existe la tarjeta");
+        error.statusCode = 404;
+        throw error;
       }
 
-      return res.status(500).send({
-        message: "Error interno del servidor",
-      });
-    });
+      return res.send({ data: card });
+    })
+    .catch(next);
 };
