@@ -15,10 +15,16 @@ const errorHandler = (err, req, res, next) => {
     statusCode = 409;
     message = "El correo electrónico ya está registrado";
   }
+  if (statusCode === 404) {
+    message = "Recurso no encontrado";
+  }
+
+  if (statusCode === 403) {
+    message = "No tienes permiso para eliminar este recurso";
+  }
 
   res.status(statusCode).send({
-    message:
-      statusCode === 500 ? "Ha ocurrido un error en el servidor" : message,
+    message: statusCode === 500 ? err.message : message,
   });
 };
 

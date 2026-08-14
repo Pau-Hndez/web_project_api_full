@@ -1,3 +1,6 @@
+const { NODE_ENV, JWT_SECRET } = process.env;
+const secret =
+  NODE_ENV === "production" ? JWT_SECRET : JWT_SECRET || "dev-secret";
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");

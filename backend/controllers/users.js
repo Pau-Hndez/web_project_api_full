@@ -1,8 +1,8 @@
-const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET;
+const User = require("../models/user");
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
@@ -22,10 +22,7 @@ module.exports.login = (req, res, next) => {
       res.send({ token });
     })
     .catch((err) => {
-      if (
-        err.message === "Correo incorrectos" ||
-        err.message === "Contraseña incorrectos"
-      ) {
+      if (err.message === "Correo o contraseña incorrectos") {
         return res.status(401).send({
           message: "Correo o contraseña incorrectos",
         });

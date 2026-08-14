@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { setToken, getToken, removeToken } from "../utils/token";
-
+import Footer from "./Footer/Footer";
 import Login from "./Main/Login/Login";
 import Register from "./Main/Register/Register";
 import InfoTooltip from "./Main/InfoTooltip/InfoTooltip";
@@ -9,7 +9,6 @@ import ProtectedRoute from "./Main/ProtectedRoute/ProtectedRoute";
 import * as auth from "../utils/auth";
 import Header from "./Header/Header";
 import Main from "./Main";
-import Footer from "./Footer/Footer";
 import api from "../utils/Api";
 import CurrentUserContext from "../contexts/CurrentUserContext";
 
@@ -47,6 +46,13 @@ function App() {
         setEmail(data.email);
         setLoggedIn(true);
         navigate("/");
+      })
+      .catch((err) => {
+        console.error("Error al iniciar sesión:", err);
+
+        setIsSuccess(false);
+        setMessage("Correo o contraseña incorrectos.");
+        setIsInfoTooltipOpen(true);
       });
   }
 
@@ -222,6 +228,7 @@ function App() {
         isSuccess={isSuccess}
         message={message}
       />
+      <Footer />
     </CurrentUserContext.Provider>
   );
 }

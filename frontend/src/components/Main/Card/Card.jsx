@@ -26,12 +26,14 @@ export default function Card(props) {
         src={link}
         onClick={() => handleClickCard(imageComponent)}
       />
-      <button
-        aria-label="Delete card"
-        className="card__delete-button"
-        type="button"
-        onClick={handleDeleteClick}
-      ></button>
+      {card.owner === currentUser._id && (
+        <button
+          aria-label="Delete card"
+          className="card__delete-button"
+          type="button"
+          onClick={handleDeleteClick}
+        ></button>
+      )}
       <div className="card__name">
         <h2 className="card__title">{name}</h2>
         <button

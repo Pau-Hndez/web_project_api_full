@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     type: String,
     validate: {
+      // esto reemplaza el unique:true, junto con el index que se encuentra al final del archivo, para evitar errores de validación de email duplicado
       validator(value) {
         return validator.isEmail(value);
       },

@@ -2,7 +2,6 @@ const Card = require("../models/card");
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .orFail()
     .then((cards) => res.send({ data: cards }))
     .catch(next);
 };
@@ -21,19 +20,20 @@ module.exports.deleteCardById = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return res.status(404).send({
-          message: "Tarjeta no encontrada",
-        });
+        const error = new Error();
+        error.statusCode = 404;
+        throw error;
       }
 
       if (!card.owner.equals(req.user._id)) {
-        return res.status(403).send({
-          message: "No tienes permiso para eliminar esta tarjeta",
-        });
+        const error = new Error();
+        error.statusCode = 403;
+        throw error;
       }
 
-      return card.deleteOne().then(() => res.send(card));
+      return card.deleteOne();
     })
+    .then(() => res.send({ message: "Tarjeta eliminada correctamente" }))
     .catch(next);
 };
 
