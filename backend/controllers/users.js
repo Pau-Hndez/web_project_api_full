@@ -21,15 +21,7 @@ module.exports.login = (req, res, next) => {
 
       res.send({ token });
     })
-    .catch((err) => {
-      if (err.message === "Correo o contraseña incorrectos") {
-        return res.status(401).send({
-          message: "Correo o contraseña incorrectos",
-        });
-      }
-
-      next(err);
-    });
+    .catch(next);
 };
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
